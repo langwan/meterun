@@ -72,7 +72,6 @@ func Run(f func() bool, workers int, works int, sleep time.Duration, title strin
 
 	waitReady.Wait()
 
-	//log.Printf("wait for the workers to be ready...\n")
 	for i := 0; i < report.workers; i++ {
 		gun <- true
 	}
@@ -108,7 +107,6 @@ func monitor() {
 			if ok {
 
 				result(&perRequests)
-				//requests = append(requests, perRequests)
 
 				tick.Stop()
 			}
@@ -142,12 +140,6 @@ func result(perRequest *[]Request) {
 
 	m.p90 = perRequests[n90].Runtime
 
-	//table := tablewriter.NewWriter(os.Stderr)
-	//table.SetHeader([]string{"流水", "QPS", "最大执行时间"})
-	//log.Printf("ok")
-	//data := []string{strconv.Itoa(n), strconv.Itoa(m.qps), m.maxRuntime.String()}
-	//table.Append(data)
-	//table.Render()
 	row++
 
 	log.Printf("|%10s |%20s |%20s |%20s |%20s |%20s |\n", "SEC", "QPS", "MAX TIME", "MIN TIME", "P90", "BAD")
@@ -158,7 +150,7 @@ func result(perRequest *[]Request) {
 func doing(f func() bool, id int, wg *sync.WaitGroup, waitReady *sync.WaitGroup) {
 	waitReady.Done()
 	<-gun
-	//log.Printf("worker id = %d start...\n", id)
+	
 	for i := 0; i < report.works; i++ {
 
 		start := time.Now()
