@@ -96,6 +96,6 @@ func main() {
 2. post
 
 * `url` : url
-* `header`: net http Header struct
+* `header`: net http header struct
 * `contentType`: content type
-* `timeout`: http Timeout
+* `timeout`: http timeout
