@@ -43,10 +43,10 @@ var waitReady sync.WaitGroup
 var chanFinish = make(chan bool)
 var chanRequest chan *Request
 var row int
-
+type Handler func(workerId int) bool
 var tick *time.Ticker
 
-func Run(f func() bool, workers int, works int, sleep time.Duration, title string) {
+func Run(f Handler, workers int, works int, sleep time.Duration, title string) {
 	st := time.Now().Format("2006-01-02 15:04")
 	logName := fmt.Sprintf("%s_%s.txt", title, st)
 	log.SetFlags(0)
@@ -147,7 +147,7 @@ func result(perRequest *[]Request) {
 	log.Printf("\n")
 }
 
-func doing(f func() bool, id int, wg *sync.WaitGroup, waitReady *sync.WaitGroup) {
+func doing(f Handler, workerId int, wg *sync.WaitGroup, waitReady *sync.WaitGroup) {
 	waitReady.Done()
 	<-gun
 	
@@ -156,7 +156,7 @@ func doing(f func() bool, id int, wg *sync.WaitGroup, waitReady *sync.WaitGroup)
 		start := time.Now()
 
 		request := Request{}
-		request.Ok = f()
+		request.Ok = f(workerId)
 
 		elapsed := time.Since(start)
 

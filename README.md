@@ -1,6 +1,6 @@
 # meterun
 
-golang stress test tool http post or custom function, support the log file
+golang benchmarking tool http post or custom function, support auto save the log file
 
 ## Installation
 
@@ -27,8 +27,11 @@ import (
 )
 
 func main() {
-	meterun.Run(func() bool {
-		code, err := meterun.Post("https://github.com/langwan/meterun", nil, "", "application/json", 60*time.Second)
+	workers := 2
+	works := 2
+	meterun.RequestStart(workers, 60 * time.Second)
+	meterun.Run(func(workerId int) bool {
+		code, err := meterun.Post(workerId,"https://github.com/langwan/meterun", nil,  "")
 		if err != nil {
 			return false
 		}
@@ -36,25 +39,23 @@ func main() {
 			return false
 		}
 		return true
-	}, 2, 2, 1*time.Second, "test login http post")
+	}, workers, works, 1*time.Second, "test get home")
 }
-
 ```
 
 output
 
 ```
-- START - 2021-08-27 15:35 - test login http post
+- START - 2021-08-29 04:00 - test custom func
 |       SEC |                 QPS |            MAX TIME |            MIN TIME |                 P90 |                 BAD |
-|         1 |                   2 |        2.029433083s |        2.028006333s |        2.029433083s |                   0 |
+|         1 |                   2 |           892.044ms |         84.835542ms |           892.044ms |                   0 |
 
 |       SEC |                 QPS |            MAX TIME |            MIN TIME |                 P90 |                 BAD |
-|         2 |                   2 |        655.149959ms |        649.918625ms |        655.149959ms |                   0 |
+|         2 |                   2 |         852.04375ms |         62.592542ms |         852.04375ms |                   0 |
 
 - END -
 | REQ TOTAL |             REQ BAS |             WORKERS |               WORKS |               SLEEP |                     |
 |         4 |                   0 |                   2 |                   2 |                  1s |                     |
-
 ```
 
 gen log file is
@@ -75,7 +76,7 @@ import (
 )
 
 func main() {
-	meterun.Run(func() bool {
+	meterun.Run(func(workerId int) bool {
 		ri := rand.Intn(1000)
 		time.Sleep(time.Duration(ri) * time.Millisecond)
 		return true
@@ -93,9 +94,9 @@ func main() {
 * `sleep`: each execution of the rest time
 * `title`: report title
 
-2. post
+2. post or get
 
+* `workerId` current worker id 
 * `url` : url
 * `header`: net http header struct
-* `contentType`: content type
-* `timeout`: http timeout
+* `content`: content

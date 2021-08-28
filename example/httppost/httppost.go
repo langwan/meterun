@@ -6,8 +6,11 @@ import (
 )
 
 func main() {
-	meterun.Run(func() bool {
-		code, err := meterun.Post("https://github.com/langwan/meterun", nil, "", "application/json", 60*time.Second)
+	workers := 2
+	works := 2
+	meterun.RequestStart(workers, 60 * time.Second)
+	meterun.Run(func(workerId int) bool {
+		code, err := meterun.Post(workerId,"https://github.com/langwan/meterun", nil,  "")
 		if err != nil {
 			return false
 		}
@@ -15,5 +18,5 @@ func main() {
 			return false
 		}
 		return true
-	}, 2, 2, 1*time.Second, "test login http post")
+	}, workers, works, 1*time.Second, "test get home")
 }
